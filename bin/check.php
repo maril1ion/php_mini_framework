@@ -1,0 +1,2 @@
+<?php
+# CLI environment diagnostics

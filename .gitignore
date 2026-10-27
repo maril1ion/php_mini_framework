@@ -1,0 +1,9 @@
+/vendor/
+.idea
+.vscode
+*.log
+.env
+.env.example
+# this is logs
+var
+composer.phar

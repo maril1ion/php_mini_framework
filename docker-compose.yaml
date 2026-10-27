@@ -1,0 +1,9 @@
+services:
+  app:
+    build: docker/php
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    restart: always
+    tty: true
+
