@@ -2,8 +2,7 @@
 .idea
 .vscode
 *.log
-.env
-.env.example
+.dockerignore
 # this is logs
 var
-composer.phar
+composer.phar.DS_Store

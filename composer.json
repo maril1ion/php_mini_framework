@@ -1,9 +1,35 @@
 {
-    "name": "projcet/php-framework",
+    "name": "project/php-framework",
+    "description": "Php mini-framework",
+    "type": "project",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "App\\": "src/"
         }
     },
-    "require": {}
+    "require": {
+        "php": "^8.4",
+        "ext-pdo_mysql": "*",
+        "ext-zip": "*",
+        "ext-intl": "*",
+        "ext-bcmath": "*",
+        "predis/predis": "^3.7"
+    },
+    "scripts": {
+        "test": "pest",
+        "stan": "phpstan analyze src",
+        "cs": "php-cs-fixer fix --dry-run --diff"
+    },
+    "require-dev": {
+        "amnuts/opcache-gui": "^3.6",
+        "pestphp/pest": "^5.3",
+        "phpstan/phpstan": "^2.3",
+        "friendsofphp/php-cs-fixer": "^3.95"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
 }

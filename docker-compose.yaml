@@ -13,10 +13,9 @@ services:
     image: mysql:8.4
     restart: unless-stopped
     environment:
-        MYSQL_DATABASE: app
-        MYSQL_USER: app_user
-        MYSQL_PASSWORD: app_password
-        MYSQL_ROOT_PASSWORD: root_password
+        MYSQL_DATABASE: ${DB_DATABASE}
+        MYSQL_PASSWORD: ${DB_PASSWORD}
+        MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     ports:
         - "3307:3306"
     volumes:
@@ -33,6 +32,14 @@ services:
       dockerfile: docker/php/Dockerfile
     volumes:
       - ./:/var/www/html
+    environment:
+      - DB_HOST=db
+      - REDIS_HOST=cache
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
 volumes:
   db_data:
 
