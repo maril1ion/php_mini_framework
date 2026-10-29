@@ -7,3 +7,5 @@ var
 composer.phar
 .DS_Store
 .env
+docs/journal
+data.json
