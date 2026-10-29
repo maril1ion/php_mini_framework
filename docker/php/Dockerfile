@@ -1,6 +1,6 @@
 FROM php:8.4-fpm
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
-COPY php.ini /usr/local/etc/php/conf.d/php.ini
+COPY /docker/php/php.ini /usr/local/etc/php/conf.d/php.ini
 
 RUN apt-get update && apt-get install -y \
     libzip-dev \
@@ -21,4 +21,4 @@ RUN apt-get update && apt-get install -y autoconf g++ make \
 
 RUN docker-php-ext-install opcache pdo_mysql bcmath
 # для загрузки файла
-WORKDIR var/www/html
+WORKDIR /var/www/html
