@@ -1,16 +1,21 @@
 <?php
-
+//1. Найти все маршруты с таким же path.
+//2. Если таких маршрутов нет → 404.
+//3. Если маршруты есть, но среди них нет текущего method → 405 + Allow.
+//4. Если маршрут и метод совпали → выполнить handler.
 declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
 use Predis\Client as RedisClient;
 
-function jsonResponse(array $data, int $status = 200): never
+function jsonResponse(array $data, int $status = 200, array $headers = []): never
 {
     http_response_code($status);
     header('Content-Type: application/json; charset=utf-8');
-
+    foreach ($headers as $name => $value) {
+        header("$name: $value");
+    }
     echo json_encode(
         $data,
         JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
@@ -21,12 +26,35 @@ function jsonResponse(array $data, int $status = 200): never
 
 $requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $requestUri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$routes = [
+    '/' => ['GET'],
+    '/health' => ['GET'],
+];
 
-if ($requestUri === '/health' && $requestMethod === 'GET') {
-    $checks = [
-        'redis' => false,
-        'database' => false,
-    ];
+// 1. Путь существует?
+if (!array_key_exists($requestUri, $routes)) {
+    jsonResponse(
+        ['error' => 'Endpoint not found'],
+        404
+    );
+}
+
+$allowedMethods = $routes[$requestUri];
+if (!in_array($requestMethod, $allowedMethods, true)) {
+    jsonResponse(
+        [
+            'error' => 'Method not allowed',
+            'method' => $requestMethod,
+            'allowed' => $allowedMethods,
+        ],
+        405,
+        ['Allow' => implode(', ', $allowedMethods)]
+    );
+}
+
+
+if ($requestUri === '/health') {
+    // ... проверка Redis и MySQL ...
 
     // Redis
     try {
@@ -75,13 +103,13 @@ if ($requestUri === '/health' && $requestMethod === 'GET') {
         $healthy ? 200 : 503
     );
 }
-
 if ($requestUri === '/' && $requestMethod === 'GET') {
     jsonResponse([
         'name' => 'PHP mini-framework',
         'status' => 'ok',
     ]);
 }
+
 
 jsonResponse(
     ['error' => 'Endpoint not found'],
