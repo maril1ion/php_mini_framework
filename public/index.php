@@ -1,12 +1,9 @@
 <?php
-//1. Найти все маршруты с таким же path.
-//2. Если таких маршрутов нет → 404.
-//3. Если маршруты есть, но среди них нет текущего method → 405 + Allow.
-//4. Если маршрут и метод совпали → выполнить handler.
+
 declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
-
+require __DIR__ . '/../bin/check.php';
 use Predis\Client as RedisClient;
 
 function jsonResponse(array $data, int $status = 200, array $headers = []): never
