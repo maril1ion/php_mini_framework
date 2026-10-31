@@ -6,7 +6,7 @@ var/
 composer.phar
 .DS_Store
 .env
-docs/
+docs/journal
 data.json
 # PHP CS Fixer configuration
 /.php-cs-fixer.cache
