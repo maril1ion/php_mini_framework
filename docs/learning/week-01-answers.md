@@ -123,3 +123,62 @@ class LoginAdmin implements LoginAdminInterface
 #A6. **Иммутабельность.** Почему метод `withHeader()` у объекта Response должен возвращать **новый** объект, а не менять `$this`? Как это связано с PSR-7 и с middleware-цепочкой?
 
 Это необходимо для того, чтобы объекты оставались неизменяемыми. PSR-7 требует, чтобы исходный объект оставался неизменяемым.А middleware-цепочка позволяет взять копию объекта и изменить и передать дальше, не меняя исходное состояние объекта.
+### Часть B:
+Найди минимум 6 проблем в коде ниже. Для каждой: что не так → чем это грозит → как исправить. Формат: нумерованный список, одна проблема — 2–3 строки.
+```
+<?php
+
+class UserController
+{
+    public $db;
+
+    public function __construct()
+    {
+        $this->db = new PDO('mysql:host=localhost;dbname=app', 'root', '');
+    }
+
+    public function show($id)
+    {
+        $stmt = $this->db->query("SELECT * FROM users WHERE id = " . $id);
+        $user = $stmt->fetch();
+
+        if ($user == null) {
+            return false;
+        }
+
+        return "<h1>" . $user['name'] . "</h1>";
+    }
+}
+```
+Подсказка: смотри на типы, на зависимости, на SQL, на обработку «не найдено», на смешение слоёв и на вывод в HTML. Одна из проблем — про то, чего в коде нет, но должно быть.
+		1. Уязвимость от SQL-инъекций. В запросе SELECT * FROM users WHERE id, указан поле id, злоумышленник может использовать SQL-инъекцию для получения данных.Исправить можно так: 
+```
+		$stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
+$stmt->execute(['id' => $id]);
+$user = $stmt->fetch();
+```
+2. Нет типов, которая нарушает типизацию. public function show(int $id): array|false - должно быть четко понятно, за что отвечают аргументы
+3. В начале файла отсутствует declare(strict_types=1);
+4. Отсутствует namespace вначале файла по стандарту PSR-4. 
+5. Прописаны напрямую параметры БД. Будет лучше использовать глобальные переменные. 
+6. Нет настроек PDO. 
+### Часть С
+Мини-рефакторинг (3 балла)
+Перепиши show() так, чтобы:
+SQL-инъекция была невозможна (prepared statement).
+«Пользователь не найден» выражалось явно, а не false.
+Контроллер не знал, откуда берётся PDO (зависимость приходит снаружи).
+HTML не собирался конкатенацией в контроллере — верни данные, а рендер оставь представлению.
+Ограничение: без фреймворков и без htmlspecialchars внутри SQL. 15–30 строк. Добавь 3 Pest-теста: успех, не найдено, попытка инъекции (id = "1 OR 1=1").
+```
+public function show(ind $id) 
+{
+$stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
+$stmt->execute(['id' => $id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+  if ($user === null) {
+        return $this->render('user_not_found', []);
+    }
+        return $this->render('user', ['user' => $user]);
+}
+```
