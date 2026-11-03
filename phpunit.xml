@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Здесь ты определяешь, как PHPUnit должен себя вести.
+-->
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+    bootstrap="tests/Pest.php"
+    colors="true"
+>
+<testsuites>
+       <testsuite name="Unit Tests">
+           <directory>tests</directory>
+       </testsuite>
+       <!-- Если у тебя будут интеграционные тесты, добавь их сюда: -->
+       <!-- <testsuite name="Integration Tests">
+            <directory>tests/Integration</directory>
+       </testsuite> -->
+   </testsuites>
+   <php>
+       <!-- Тут могут быть переменные окружения, которые нужны тестам -->
+   </php>
+
+</phpunit>

@@ -8,6 +8,11 @@
             "App\\": "src/"
         }
     },
+    "autoload-dev": {
+    	"psr-4": {
+     		"Tests\\": "tets/"
+     }
+    },
     "require": {
         "php": "^8.4",
         "ext-pdo_mysql": "*",
@@ -18,7 +23,7 @@
     },
     "scripts": {
         "test": "pest",
-        "stan": "phpstan analyze src",
+        "stan": "phpstan analyze",
         "cs": "php-cs-fixer fix --dry-run --diff"
     },
     "require-dev": {

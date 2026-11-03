@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 use Predis\Client as RedisClient;
-
+/**
+ * @param array<string,mixed> $headers
+ * @param array<string,mixed> $data
+ */
 function jsonResponse(array $data, int $status = 200, array $headers = []): never
 {
     http_response_code($status);

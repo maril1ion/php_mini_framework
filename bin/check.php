@@ -10,11 +10,19 @@ $loadedExtensions = array_filter(
     $arrayExtensions,
     static fn (string $extension): bool => extension_loaded($extension)
 );
+/**
+ * @param list<string> $arrayExtensions
+ * @return array<int, string>
+ */
 function missExtensions(array $arrayExtensions): array
 {
 	$getLoaded = get_loaded_extensions();
 	return array_diff($arrayExtensions, $getLoaded);
 }
+
+/**
+ * @return array{ok: bool, value: string}
+ */
 function pdoMysqlVersion()
 {
 	try {
@@ -36,6 +44,9 @@ function pdoMysqlVersion()
 			];
 	}
 }
+/**
+ * @return array{ok: bool, value: string}
+ */
 function redisPingPong()
 {
 	try {
@@ -78,8 +89,7 @@ foreach ($array as $key => $value) {
     );
 }
 $ok = true;
-$ok = $ok && $mysql['ok'];
-$ok = $ok && $redis['ok'];
+$ok = $mysql['ok'] && $redis['ok'];
 
 if ($ok) {
 	exit(0);
