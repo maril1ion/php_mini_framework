@@ -13,7 +13,7 @@ final class Response
     /**
      * @param array<string,string> $headers
      */
-    public function __construct(string $body = '', int $status = 200, array $headers = [])
+    public function __construct(string $body = '', array $headers = [], int $status = 200)
     {
         $this->body = $body;
         $this->status = $status;
@@ -21,17 +21,17 @@ final class Response
     }
     public function withStatus(int $status): self
     {
-        return new self($this->body, $status, $this->headers);
+        return new self($this->body,$this->headers, $status);
     }
 
     public function withHeader(string $key, string $value): self
     {
-        return new self($this->body, $this->status, array_merge($this->headers, [$key => $value]));
+        return new self($this->body,array_merge($this->headers, [$key => $value]), $this->status);
     }
 
     public function withBody(string $body): self
     {
-        return new self($body, $this->status, $this->headers);
+        return new self($body,$this->headers, $this->status);
     }
 
     public function body(): string
@@ -49,32 +49,33 @@ final class Response
     {
         return $this->headers;
     }
-//json(), html(), redirect()
-		public static function send(string $body, string $type = 'text/html; charset=utf-8', int $status = 200): void
+    /**
+     * @param array<array-key,mixed> $data
+     */
+		public static function json(array $data, int $status=200): self
 		{
-		    http_response_code($status);
-		    header('Content-Type: ' . $type);
-		    echo $body;
-				exit;
-		}
-		public static function json(mixed $data, int $status=200) {
-          self::send(
-              json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
-              'application/json; charset=utf-8',
-              $status
-          );
+      return new self(json_encode($data,JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+      ['Content-Type' => 'application/json; charset=utf-8'],
+      $status);
     }
 
-    public static function html(string $value): string
+    public static function html(string $html, int $status=200): self
     {
-        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+     return new self($html, ['Content-Type' => 'text/html; charset=utf-8'], $status);
     }
 
-    public static function redirect(string $url, int $status = 302): never
+    public static function redirect(string $url, int $status = 302): self
     {
-        header('Location: ' . $url, true, $status);
-        exit;
+    return new self('', ['Location' => $url], $status);
+}
+
+    public function send (): void
+    {
+     http_response_code($this->status);
+     foreach($this->headers as $name=>$value)
+     {
+      header("$name: $value");
+     }
+     echo $this->body;
     }
-
-
 }
