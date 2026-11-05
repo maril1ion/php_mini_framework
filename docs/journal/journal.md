@@ -3,3 +3,6 @@
 refined and integrated the necessary extensions and files\
 | 3 | 29.10.2026 | 1 |index.php| 2,5 | 4.5 |redis, health redis, проверка http запросов | done |\
 | 4 |31.10.2026 | 1| check.php | 2.5 | 4.5 | scripts check.php and submit 1 week. | done |
+|5  |03.11.2026 | 1|phpstan.|4|3|phpstan(0 errors) Tests(theory). Helper fnc for |done|
+|   |           |  |tests.| | | responce php||
+|   |           |  |helper fnc | | | ||
