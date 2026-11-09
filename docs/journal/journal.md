@@ -1,8 +1,11 @@
-|week|    date   |phase|        focus                     |plan/h|fact/h| artifact                        |status|\
-| 2 | 28.10.2026 | 1 | Dockerfile, php.ini, composer, env | 2,5 | 3 | образ собирается, composer в образе | done |
-refined and integrated the necessary extensions and files\
-| 3 | 29.10.2026 | 1 |index.php| 2,5 | 4.5 |redis, health redis, проверка http запросов | done |\
-| 4 |31.10.2026 | 1| check.php | 2.5 | 4.5 | scripts check.php and submit 1 week. | done |
-|5  |03.11.2026 | 1|phpstan.|4|3|phpstan(0 errors) Tests(theory). Helper fnc for |done|
-|   |           |  |tests.| | | responce php||
-|   |           |  |helper fnc | | | ||
+
+| \|week\| | \|date\|                      | \|phase\| | \|focus\|                                                                                                                           | \|plan/h\| | \|fact/h\| | \|artifact\|                                                                     | status |
+| :------- | :---------------------------- | :-------- | :---------------------------------------------------------------------------------------------------------------------------------- | :--------- | :--------- | :------------------------------------------------------------------------------- | :----- |
+| 2        | 28.10.2026                    | 1         | Dockerfile, php.ini, composer, env                                                                                                  | 2,5        | 3          | образ собирается, composer в образе.                                             | done   |
+| 2        | 29.10.2026                    | 1         | index.php                                                                                                                           | 2,5        | 4.5        | redis, health redis, проверка http запросов                                      | done   |
+| 2        | 31.10.2026                    | 1         | check.php                                                                                                                           | 2.5        | 4.5        | scripts check.php and submit 1 week.                                             | done   |
+| 2        | 03.11.2026                    | 1         | phpstan,<br>tests,<br>helper fnc.                                                                                                   | 4          | 3          | phpstan(0 errors) Tests(theory). Helper fnc for responce php.                    | done   |
+| 2        | 07.11.2026                    | 1         | Response.php\<br>ResponseTest.php                                                                                                   | 3          | 3          | phpstan(0 errors). Tests(for ResponseTest). Response - headers validation(/r/n). | done   |
+| 2        | 08.11.2026<br>-<br>NN.11.2026 | 1         | `Request::fromGlobals()`:<br>геттеры `method()`, `path()`, <br>`query(string $key, $default)`, `header($name)`, `body()`, `json()`. |            |            |                                                                                  |        |
+
+
