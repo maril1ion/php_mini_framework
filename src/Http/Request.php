@@ -13,10 +13,10 @@ final class Request
     public function __construct(
         private readonly string $method,
         private readonly string $path,
-        private readonly array $query,
-        private readonly array $post,
-        private readonly array $headers,
-        private readonly array $cookies,
+        private readonly array $query = [],
+        private readonly array $post = [],
+        private readonly array $headers = [],
+        private readonly array $cookies = [],
     )
     {}
     public static function fromGlobals(): self
