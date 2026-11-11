@@ -1,28 +1,36 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Route;
 
 final class RouteCompiler
 {
-    private const PLACEHOLDER_REGEX = '\{([a-zA-Z_][a-zA-Z0-9_]*)(?::([^}]+))?\}/';
-    public  function compiler(string $pattern): string
+    public function compiler(string $pattern): string
     {
-        //1 Статика и плейсхолдеры
-        $segments = preg_split(self::PLACEHOLDER_REGEX, $pattern, -1,PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        // 1. Разбиваем строку, сохраняя плейсхолдеры целиком: {id} или {id:\d+}
+        // #(\{.+?\})# — эта регулярка найдет всё внутри скобок и сохранит сами скобки
+        $segments = preg_split('#(\{.+?\})#', $pattern, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
         $regex = '';
 
         foreach ($segments as $segment) {
-            //Если это placeholder - компилируем
-            if (preg_match(self::PLACEHOLDER_REGEX, $segment, $matches)) {
-                $name = $matches[1];
-                $constraint = $matches[2] ?? '[^/]+';
+            // Если сегмент начинается с { и заканчивается на } — это наш плейсхолдер
+            if (str_starts_with($segment, '{') && str_ends_with($segment, '}')) {
+                // Убираем внешние скобки: {id:\d+} -> id:\d+
+                $inner = trim($segment, '{}');
+
+                // Разделяем имя и возможную регулярку (по первому двоеточию)
+                $parts = explode(':', $inner, 2);
+                $name = $parts[0];
+                $constraint = $parts[1] ?? '[^/]+'; // Если регулярки нет, берем "всё до следующего слеша"
+
                 $regex .= "(?P<$name>$constraint)";
-                continue;
+            } else {
+                // Если это обычный текст (статика), просто экранируем спецсимволы
+                $regex .= preg_quote($segment, '#');
             }
         }
-        $regex .= preg_quote($segments, '#', '#');
 
-    return '#^' . $regex . '$#';
+        return '#^' . $regex . '$#';
     }
 }

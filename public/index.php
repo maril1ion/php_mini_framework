@@ -14,5 +14,8 @@ $router -> post('/health', function (Request $request)
 $router -> get('/', function (Request $request){
     return Response::json(['name' => 'PHP mini-framework', 'status' => 'ok']);
 });
+$router -> get('/user/{id}', function (Request $request, array $params){
+    return Response::json(['user' => $params['id'], 'status' => 'ok']);
+});
 $response = $router -> dispatch($request);
 $response->send();

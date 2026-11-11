@@ -25,37 +25,34 @@ final class Router {
         $method = $request->method();
         if (isset($this->routes[$method])) {
             foreach ($this->routes[$method] as $pattern => $route) {
-                if(preg_match($route['regex'], $path, $matches)) {
+                if (preg_match($route['regex'], $path, $matches)) {
                     $params = array_filter(
                         $matches,
                         static fn($key) => is_string($key),
-                    ARRAY_FILTER_USE_KEY);
+                        ARRAY_FILTER_USE_KEY);
                     return ($route['handler'])($request, $params);
-            }
                 }
+            }
         }
         //path for others methods - (errors - 405)
         $allowedMethods = [];
-
+        $pathExistsForOtherMethods = false;
         foreach ($this->routes as $routerMethod => $routes) {
             foreach ($routes as $pattern => $route) {
                 if (preg_match($route['regex'], $path)) {
-
+                    $pathExistsForOtherMethods = true;
+                    $allowedMethods[] = $routerMethod;
                 }
             }
-            if (array_key_exists($path, $paths)) {
-                $pathExistsForOtherMethods = true;
-                $allowedMethods[] = $routerMethod;
+        }
+            if ($pathExistsForOtherMethods) {
+                return new Response(
+                    'Method Not Allowed',
+                    ['Allow' => implode(', ', $allowedMethods)],
+                    405
+                );
             }
-        }
-        if ($pathExistsForOtherMethods) {
-            return new Response(
-                'Method Not Allowed',
-                ['Allow' => implode(', ', $allowedMethods)],
-                405
-            );
-        }
-        return new Response('Not Found', [], 404);
+            return new Response('Not Found', [], 404);
     }
     public function get(string $path, mixed $handler): void
     {
