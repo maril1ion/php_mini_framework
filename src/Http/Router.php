@@ -1,29 +1,48 @@
 <?php
 declare(strict_types=1);
 namespace App\Http;
+use App\Http\Route\RouteCompiler;
 
 final class Router {
     /**
         * @var array<string, mixed> $routes
     */
  private array $routes = [];
+ private RouteCompiler $compiler;
+ public function __construct() {
+     $this -> compiler = new RouteCompiler();
+ }
     public function addRoute(string $method, string $path, mixed $handler): void
     {
-        $this->routes[strtoupper($method)][$path] = $handler;
+        $this->routes[strtoupper($method)][$path] = [
+            'regex' => $this-> compiler-> compiler($path),
+            'handler' => $handler
+        ];
     }
     public function dispatch(Request $request): Response
     {
         $path = $request->path();
         $method = $request->method();
-        if (isset($this->routes[$method][$path])) {
-            $handler = $this->routes[$method][$path];
-            return $handler($request);
+        if (isset($this->routes[$method])) {
+            foreach ($this->routes[$method] as $pattern => $route) {
+                if(preg_match($route['regex'], $path, $matches)) {
+                    $params = array_filter(
+                        $matches,
+                        static fn($key) => is_string($key),
+                    ARRAY_FILTER_USE_KEY);
+                    return ($route['handler'])($request, $params);
+            }
+                }
         }
         //path for others methods - (errors - 405)
-        $pathExistsForOtherMethods = false;
         $allowedMethods = [];
 
-        foreach ($this->routes as $routerMethod => $paths) {
+        foreach ($this->routes as $routerMethod => $routes) {
+            foreach ($routes as $pattern => $route) {
+                if (preg_match($route['regex'], $path)) {
+
+                }
+            }
             if (array_key_exists($path, $paths)) {
                 $pathExistsForOtherMethods = true;
                 $allowedMethods[] = $routerMethod;

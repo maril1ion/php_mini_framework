@@ -7,5 +7,5 @@
 | 2        | 03.11.2026                    | 1         | phpstan,<br>tests,<br>helper fnc.                                                                                                   | 4          | 3          | phpstan(0 errors) Tests(theory). Helper fnc for responce php.                    | done   |
 | 2        | 07.11.2026                    | 1         | Response.php\<br>ResponseTest.php                                                                                                   | 3          | 3          | phpstan(0 errors). Tests(for ResponseTest). Response - headers validation(/r/n). | done   |
 | 2        | 08.11.2026<br>-<br>09.11.2026 | 1         | `Request::fromGlobals()`:<br>геттеры `method()`, `path()`, <br>`query(string $key, $default)`, `header($name)`, `body()`, `json()`. |2.5           |2.5            |Requery and Router.<br>Thin front controller.                                                                                    |<b>done</b>        |
-
+|2|10.11.2026|1|Week 2 is fully completed - Request, Router and Response| 2.5| 2.5|Tests for thin controller| done - Week 2 is fully completed|
 
