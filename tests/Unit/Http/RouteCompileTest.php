@@ -2,6 +2,9 @@
 declare(strict_types=1);
 
 use App\Http\Route\RouteCompiler;
+use App\Http\Router;
+use App\Http\Request;
+use App\Http\Response;
 
 test('it compiles path with placeholder to regex', function () {
     $compiler = new RouteCompiler();
@@ -19,4 +22,17 @@ test('it matches path against compiled regex', function () {
     preg_match($regex, $path, $matches);
 
     expect($matches['id'] ?? null)->toBe('123');
+});
+
+test('it passes dynamic parameters to handler', function () {
+    $router = new Router();
+    $router->get('/user/{id}', function (Request $request, array $params) {
+        return new Response('User ' . $params['id']);
+    });
+    $request = new Request('GET','/user/42');
+    $response = $router->dispatch($request);
+
+    expect($response->status())->toBe(200)
+        ->and($response->body())->toBe('User 42');
+
 });
