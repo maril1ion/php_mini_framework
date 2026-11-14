@@ -1,21 +1,27 @@
 <?php
-declare(strict_types=1);
-namespace App\Http;
-use App\Http\Route\RouteCompiler;
 
-final class Router {
+declare(strict_types=1);
+
+namespace App\Http;
+
+use App\Http\Route\RouteCompiler;
+use ReflectionClass;
+
+final class Router
+{
     /**
-        * @var array<string, callable> $routes
-    */
- private array $routes = [];
- private RouteCompiler $compiler;
- public function __construct() {
-     $this -> compiler = new RouteCompiler();
- }
+     * @var array<string, callable> $routes
+     */
+    private array $routes = [];
+    private RouteCompiler $compiler;
+    public function __construct()
+    {
+        $this->compiler = new RouteCompiler();
+    }
     public function addRoute(string $method, string $path, mixed $handler): void
     {
         $this->routes[strtoupper($method)][$path] = [
-            'regex' => $this-> compiler-> compiler($path),
+            'regex' => $this->compiler->compiler($path),
             'handler' => $handler
         ];
     }
@@ -23,16 +29,14 @@ final class Router {
     {
         $path = $request->path();
         $method = $request->method();
-        var_dump("Method: " . $method . ", Path: " . $path);
-        var_dump("Registered routes: " . implode(', ', array_keys($this->routes[$method] ?? [])));
         if (isset($this->routes[$method])) {
             foreach ($this->routes[$method] as $pattern => $route) {
-                var_dump("Testing against regex: " . $route['regex']);
                 if (preg_match($route['regex'], $path, $matches)) {
                     $params = array_filter(
                         $matches,
                         static fn($key) => is_string($key),
-                        ARRAY_FILTER_USE_KEY);
+                        ARRAY_FILTER_USE_KEY
+                    );
                     return ($route['handler'])($request, $params);
                 }
             }
@@ -49,15 +53,35 @@ final class Router {
                 }
             }
         }
-            if ($pathExistsForOtherMethods) {
-                return new Response(
-                    'Method Not Allowed',
-                    ['Allow' => implode(', ',  array_unique($allowedMethods))],
-                    405
-                );
-            }
-            return new Response('Not Found', [], 404);
+        if ($pathExistsForOtherMethods) {
+            return new Response(
+                'Method Not Allowed',
+                ['Allow' => implode(', ',  array_unique($allowedMethods))],
+                405
+            );
+        }
+        return new Response('Not Found', [], 404);
     }
+    public function registerController(array $controllers): void
+    {
+        foreach ($controllers as $controllerClass) {
+            $reflection = new ReflectionClass($controllerClass);
+            foreach ($reflection->getMethods() as $method) {
+
+                $attributes = $method->getAttributes(\App\Http\Route\Route::class);
+
+                foreach ($attributes as $attribute) {
+                    $route = $attribute->newInstance();
+
+                    foreach ($route->methods as $httpMethod) {
+                        $this->addRoute($httpMethod, $route->path, [new $controllerClass(), $method->getName()]);
+                    }
+                }
+            }
+        }
+    }
+
+
     public function get(string $path, mixed $handler): void
     {
         $this->addRoute('GET', $path, $handler);
@@ -77,5 +101,4 @@ final class Router {
     {
         $this->addRoute('DELETE', $path, $handler);
     }
-
 }
