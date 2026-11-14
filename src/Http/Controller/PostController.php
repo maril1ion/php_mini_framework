@@ -10,11 +10,13 @@ use App\Http\Request;
 
 final class PostController
 {
-
-  #[Route(path: '/health', methods: ['POST'])]
-  public function show(Request $request, array $params): Response
-  {
-    $params['status'] = 'UP';
-    return Response::json($params);
-  }
+	/**
+	 * @param array<string,string> $params
+	 */
+	#[Route(path: '/health', methods: ['POST'])]
+	public function show(Request $request, array $params): Response
+	{
+		$params['status'] = 'UP';
+		return Response::json($params);
+	}
 }

@@ -10,7 +10,9 @@ use App\Http\Request;
 
 final class GetController
 {
-
+	/**
+ * @param array<string,string> $params
+ */
   #[Route(path: '/', methods: ['GET'])]
   public function show(Request $request, array $params): Response
   {

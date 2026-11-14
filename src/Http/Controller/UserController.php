@@ -10,11 +10,13 @@ use App\Http\Request;
 
 final class UserController
 {
-
-  #[Route(path: '/user/{id}', methods: ['GET'])]
-  public function show(Request $request, array $params): Response
-  {
-    $id = $params['id'] ?? null;
-    return new Response("User ID: $id");
-  }
+	/**
+	 * @param array<string,string> $params
+	 */
+	#[Route(path: '/user/{id}', methods: ['GET'])]
+	public function show(Request $request, array $params): Response
+	{
+		$id = $params['id'] ?? null;
+		return new Response("User ID: $id");
+	}
 }

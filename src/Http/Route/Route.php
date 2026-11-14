@@ -9,6 +9,9 @@ use Attribute;
 #[Attribute(Attribute::TARGET_METHOD)]
 final class Route
 {
+	/**
+	@param array<int,string> $methods
+ */
   public function __construct(
     public readonly string $path,
     public readonly array $methods = ['GET']

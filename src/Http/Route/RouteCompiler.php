@@ -10,6 +10,9 @@ final class RouteCompiler
         // 1. Разбиваем строку, сохраняя плейсхолдеры целиком: {id} или {id:\d+}
         // #(\{.+?\})# — эта регулярка найдет всё внутри скобок и сохранит сами скобки
         $segments = preg_split('#(\{.+?\})#', $pattern, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        if ($segments === false) {
+            throw new \InvalidArgumentException(sprintf('Invalid route pattern: "%s"', $pattern));
+        }
 
         $regex = '';
 
