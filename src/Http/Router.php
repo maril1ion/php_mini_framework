@@ -23,10 +23,10 @@ final class Router
 		$this->compiler = new RouteCompiler();
 	}
 	/**
- * @param string $method
- * @param string $path
- * @param callable|array{object, string} $handler
- */
+	 * @param string $method
+	 * @param string $path
+	 * @param callable|array{object, string} $handler
+	 */
 	public function addRoute(string $method, string $path, mixed $handler): void
 	{
 		$this->routes[strtoupper($method)][$path] = [

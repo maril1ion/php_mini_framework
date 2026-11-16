@@ -4,7 +4,7 @@ declare(strict_types=1);
 use App\Http\Router;
 use App\Http\Response;
 use App\Http\Request;
-
+use App\Http\Controller\UserController;
 test('Router returns 200 with known route', function () {
     $router = new Router();
     $router->get('/', fn(Request $req) => new Response('Home'));
@@ -36,4 +36,15 @@ test('Router returns 405 with incorrect method', function () {
 
     expect($response->status())->toBe(405)
         ->and($response->body())->toBe('Method Not Allowed');
+});
+
+test('Register GET method controller', function () {
+    $router  = new Router();
+    $router -> registerController(
+        [UserController::class]
+    );
+    $request = new Request('GET', '/user/42');
+    $response = $router->dispatch($request);
+    expect($response -> status())->toBe(200)
+        -> and($response -> body())->toBe('User ID: 42');
 });
