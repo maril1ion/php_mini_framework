@@ -19,7 +19,8 @@
         "ext-zip": "*",
         "ext-intl": "*",
         "ext-bcmath": "*",
-        "predis/predis": "^3.7"
+        "predis/predis": "^3.7",
+        "psr/container": "^2.0"
     },
     "scripts": {
         "test": "pest",
