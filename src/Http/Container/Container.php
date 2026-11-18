@@ -4,7 +4,8 @@ namespace App\Http\Container;
 use phpDocumentor\Reflection\PseudoTypes\False_;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
-use ReflectionParameter;
+use Exception;
+use ReflectionException;
 class Container implements ContainerInterface
 {
     private array $factories = [];
@@ -30,20 +31,37 @@ class Container implements ContainerInterface
     {
         return isset($this->factories[$id]) || isset($this->instances[$id]);
     }
-    private function resolveParameter(string $id)
+    private function resolveParameter(string $id): mixed
     {
+        if (!class_exists($id)) {
+            throw new Exception("Class {$id} not found");
+        }
         $reflection = new ReflectionClass($id);
-        $constructor = $reflection->getConstructor();
-        if ($constructor !== null) {
-            return $constructor;
-        }else {
-            return new $id();
+        $constructor = $reflection -> getConstructor();
+        if ($constructor === null) {
+          return new $id();
         }
         $params = $constructor->getParameters();
+        $args = [];
         foreach ($params as $parameter) {
+            $name = $parameter->getName();
+            //проверка явно ли зарегестрированна
+            if (array_key_exists($name, $this->instances)) {
+                $args[] = $this->instances[$name];
+                continue;
+            }
             $type = $parameter->getType();
-            $this -> get($parameter->getName());
+            // является ли объект встроенным
+            if ($type !== null && !$type->isBuiltin()) {
+                $args[] = $this->get($type->getName());
+                continue;
+            }
+            if ($parameter->isDefaultValueAvailable()) {
+                $args[] = $parameter->getDefaultValue();
+            }else {
+                throw new Exception('Parameter ' . $name . ' not available');
+            }
         }
-
+        return $reflection -> newInstanceArgs($args);
     }
 }
