@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Container;
-use phpDocumentor\Reflection\PseudoTypes\False_;
+use http\Exception\RuntimeException;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use Exception;
@@ -10,6 +10,7 @@ class Container implements ContainerInterface
 {
     private array $factories = [];
     private array $instances = [];
+    private array|bool $building = [];
     public function set(string $id, callable $factory): void{
         $this->factories[$id] = $factory;
     }
@@ -23,9 +24,22 @@ class Container implements ContainerInterface
             $this->instances[$id] = $this->factories[$id]($this);
             return $this->instances[$id];
         }
-    throw new \Exception(
-        'Services not found' . $id
-    );
+        if (isset($this->building[$id])) {
+            throw new \Exception("Circular reference for $id");
+        }
+        if (!class_exists($id)) {
+            throw new \Exception(
+                'Services not found ' . $id
+            );
+        }
+        $this->building[$id] = true;
+        try{
+            $obj = $this->resolveParameter($id);
+            $this->instances[$id] = $obj;
+            return $obj;
+        }finally{
+            unset($this->building[$id]);
+        }
     }
     public function has(string $id): bool
     {
@@ -34,7 +48,7 @@ class Container implements ContainerInterface
     private function resolveParameter(string $id): mixed
     {
         if (!class_exists($id)) {
-            throw new Exception("Class {$id} not found");
+            throw new \RuntimeException("Class {$id} not found");
         }
         $reflection = new ReflectionClass($id);
         $constructor = $reflection -> getConstructor();
@@ -59,7 +73,7 @@ class Container implements ContainerInterface
             if ($parameter->isDefaultValueAvailable()) {
                 $args[] = $parameter->getDefaultValue();
             }else {
-                throw new Exception('Parameter ' . $name . ' not available');
+                throw new \RuntimeException('Parameter ' . $name . ' not available');
             }
         }
         return $reflection -> newInstanceArgs($args);
