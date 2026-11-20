@@ -5,8 +5,11 @@ use App\Http\Router;
 use App\Http\Response;
 use App\Http\Request;
 use App\Http\Controller\UserController;
+use App\Http\Container\Container;
 test('Router returns 200 with known route', function () {
-    $router = new Router();
+    $container = new Container();
+    $router  = new Router($container);
+
     $router->get('/', fn(Request $req) => new Response('Home'));
 
     $request = new Request('GET', '/');
@@ -17,7 +20,10 @@ test('Router returns 200 with known route', function () {
 });
 
 test('Router returns 404 with unknown route', function () {
-    $router = new Router();
+    $container = new Container();
+    $router  = new Router($container);
+
+
     $router->get('/', fn(Request $req) => new Response('Home'));
 
     $request = new Request('GET', '/unknown');
@@ -28,7 +34,9 @@ test('Router returns 404 with unknown route', function () {
 });
 
 test('Router returns 405 with incorrect method', function () {
-    $router = new Router();
+    $container = new Container();
+    $router  = new Router($container);
+
     $router->get('/', fn(Request $req) => new Response('Home'));
 
     $request = new Request('POST', '/');
@@ -39,7 +47,8 @@ test('Router returns 405 with incorrect method', function () {
 });
 
 test('Register GET method controller', function () {
-    $router  = new Router();
+    $container = new Container();
+    $router  = new Router($container);
     $router -> registerController(
         [UserController::class]
     );

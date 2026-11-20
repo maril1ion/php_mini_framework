@@ -59,16 +59,17 @@ class Container implements ContainerInterface
         $args = [];
         foreach ($params as $parameter) {
             $name = $parameter->getName();
-            //проверка явно ли зарегестрированна
-            if (array_key_exists($name, $this->instances)) {
-                $args[] = $this->instances[$name];
-                continue;
-            }
             $type = $parameter->getType();
-            // является ли объект встроенным
+            //проверка явно ли зарегестрированна
             if ($type !== null && !$type->isBuiltin()) {
-                $args[] = $this->get($type->getName());
-                continue;
+                // Получаем имя класса (например, "App\Http\Container\Database")
+                $typeName = $type->getName();
+
+                // 2. Спрашиваем у контейнера: умеешь ли ты создавать такой тип?
+                if ($this->has($typeName)) {
+                    $args[] = $this->get($typeName); // Получаем объект из контейнера
+                    continue;
+                }
             }
             if ($parameter->isDefaultValueAvailable()) {
                 $args[] = $parameter->getDefaultValue();

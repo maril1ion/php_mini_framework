@@ -5,7 +5,7 @@ use App\Http\Route\RouteCompiler;
 use App\Http\Router;
 use App\Http\Request;
 use App\Http\Response;
-
+use App\Http\Container\Container;
 test('it compiles path with placeholder to regex', function () {
     $compiler = new RouteCompiler();
     $regex = $compiler->compiler('/users/{id}');
@@ -25,7 +25,8 @@ test('it matches path against compiled regex', function () {
 });
 
 test('it passes dynamic parameters to handler', function () {
-    $router = new Router();
+    $container = new Container();
+    $router = new Router($container);
     $router->get('/user/{id}', function (Request $request, array $params) {
         return new Response('User ' . $params['id']);
     });

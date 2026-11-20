@@ -1,12 +1,13 @@
 <?php
 use App\Http\Container\Container;
+use App\Http\Router;
+
 class ForTest{}
 class CircularA { public function __construct(public CircularB $b) {} }
 class CircularB { public function __construct(public CircularA $a) {} }
 
 test('Container PSR-11 test', function() {
     $container = new Container();
-
     $container -> set(ForTest::class, function () {
         return new ForTest();
     });

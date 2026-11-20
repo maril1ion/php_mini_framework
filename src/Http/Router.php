@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http;
 
 use App\Http\Route\RouteCompiler;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use App\Http\Route\Route;
 
@@ -18,9 +19,11 @@ final class Router
 	 */
 	private array $routes = [];
 	private RouteCompiler $compiler;
-	public function __construct()
+    private ContainerInterface $container;
+	public function __construct(ContainerInterface $container)
 	{
 		$this->compiler = new RouteCompiler();
+        $this->container = $container;
 	}
 	/**
 	 * @param string $method
@@ -92,14 +95,15 @@ final class Router
 			$reflection = new ReflectionClass($controllerClass);
 			foreach ($reflection->getMethods() as $method) {
 				$attributes = $method->getAttributes(Route::class);
+                $controllerInstance = $this->container->get($controllerClass);
 
 				foreach ($attributes as $attribute) {
 					$route = $attribute->newInstance();
 
 					foreach ($route->methods as $httpMethod) {
 						$this->addRoute($httpMethod, $route->path, [
-							new $controllerClass(),
-							$method->getName(),
+                            $controllerInstance, // Передаем готовый объект из контейнера
+                            $method->getName(),
 						]);
 					}
 				}
