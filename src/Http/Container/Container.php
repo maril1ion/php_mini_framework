@@ -1,16 +1,24 @@
 <?php
 
 namespace App\Http\Container;
-use http\Exception\RuntimeException;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
-use Exception;
-use ReflectionException;
 class Container implements ContainerInterface
 {
+    /**
+     * @var array<string,callable> $factories
+     */
     private array $factories = [];
+
+    /**
+     * @var array<string,string> $instances
+     */
     private array $instances = [];
-    private array|bool $building = [];
+    /**
+     * @var array<string,bool|string> $building
+     */
+    private array $building = [];
+
     public function set(string $id, callable $factory): void{
         $this->factories[$id] = $factory;
     }
@@ -61,15 +69,14 @@ class Container implements ContainerInterface
             $name = $parameter->getName();
             $type = $parameter->getType();
             //проверка явно ли зарегестрированна
-            if ($type !== null && !$type->isBuiltin()) {
-                // Получаем имя класса (например, "App\Http\Container\Database")
-                $typeName = $type->getName();
+            if ($type instanceof \ReflectionNamedType) {
+                if (!$type->isBuiltin()) {
+                    $typeName = $type->getName();
 
-                // 2. Спрашиваем у контейнера: умеешь ли ты создавать такой тип?
-                if ($this->has($typeName)) {
-                    $args[] = $this->get($typeName); // Получаем объект из контейнера
-                    continue;
-                }
+                    if ($this->has($typeName)) {
+                        $args[] = $this->get($typeName); // Получаем объект из контейнера
+                        continue;
+                    }                }
             }
             if ($parameter->isDefaultValueAvailable()) {
                 $args[] = $parameter->getDefaultValue();

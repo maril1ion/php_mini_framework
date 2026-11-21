@@ -84,7 +84,7 @@ final class Router
 	}
 
 	/**
-	 * @param array<string,string> $controllers
+	 * @param array<int,string> $controllers
 	 */
 	public function registerController(array $controllers): void
 	{
