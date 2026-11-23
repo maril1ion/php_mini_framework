@@ -8,7 +8,7 @@ use App\Http\Route\Route;
 use App\Http\Request;
 use PDO;
 use App\Http\Container\Container;
-
+use App\Database\Database;
 final class DatabaseContoller
 {
     public function __construct(private Database $database) {}
@@ -19,12 +19,12 @@ final class DatabaseContoller
     #[Route(path: '/database', methods: ['GET'])]
     public function show(Request $request, array $params): Response
     {
-        $data = $this->database->query();
-
+$tableName = "users";
+        $data = $this ->database->prepare($tableName);
         $params = [
             'name' => 'Database',
             'status' => 'ok',
-            'database' => $data
+            'message' => $data
         ];
         return Response::json($params);
     }

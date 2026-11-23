@@ -13,8 +13,8 @@ use App\Http\Controller\DatabaseContoller;
 require __DIR__ . '/../vendor/autoload.php';
 $request = Request::fromGlobals();
 $container = new Container();
-$container->set(Database::class, function($c) {
-    return new Database($c->get(PDO::class));
+$container->set(Database::class,function () {
+    return new Database();
 });
 $router = new Router($container);
 $router->registerController(
