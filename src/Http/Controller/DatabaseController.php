@@ -18,7 +18,7 @@ final class DatabaseController
 	public function show(Request $request, array $params): Response
 	{
 		$tableName = 'users';
-		$this->database->query(
+		$this->database->execute(
 			"CREATE TABLE IF NOT EXISTS $tableName (id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL, email TEXT NOT NULL);",
 		);
 		$this->database->query(
